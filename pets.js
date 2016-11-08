@@ -10,7 +10,7 @@ var cmd = process.argv[2];
 var index = process.argv[3];
 
 
-if (cmd === 'read') {
+if (cmd === 'read'){
 fs.readFile(petsPath, 'utf8', function(err, data) {
   var dataP = JSON.parse(data);
 
@@ -34,7 +34,46 @@ fs.readFile(petsPath, 'utf8', function(err, data) {
     console.log(pet[index]);
  });
 }
+else if (cmd === "create") {
+  var age = process.argv[3];
+  var kind = process.argv[4];
+  var name = process.argv[5];
+
+  fs.readFile(petsPath, 'utf8', function(readErr, data) {
+    if (readErr) {
+      throw readErr;
+    }
+
+    else if (!age && !kind && !name) {
+      console.error(`Usage: ${node} ${file} ${cmd} age kind name`);
+      process.exit(1);
+    }
+
+var pets = JSON.parse(data);
+
+var pet = {
+  "age": age,
+  "kind": kind,
+  "name": name
+};
+
+pets.push(pet);
+
+var petsJSON = JSON.stringify(pets);
+
+fs.writeFile(petsPath, petsJSON, function(writeErr) {
+  if (writeErr) {
+    throw writeErr;
+  }
+
+console.log(pets);
+console.log(pet);
+
+    });
+  });
+}
+
   else {
-    console.error(`Usage: ${node} ${file} read`);
+    console.error(`Usage: ${node} ${file} read | create`);
     process.exit(1);
   }

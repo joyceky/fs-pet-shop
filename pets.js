@@ -22,10 +22,12 @@ else if (cmd === "update") {
   update();
 }
 
-else if (cmd === "destroy") {}
+else if (cmd === "destroy") {
+  destroy();
+}
 
   else {
-    console.error(`Usage: ${node} ${file} READ | CREATE`);
+    console.error(`Usage: ${node} ${file} READ | CREATE | UPDATE | DESTROY`);
     process.exit(1);
   }
 
@@ -46,7 +48,7 @@ else if (cmd === "destroy") {}
       }
 
       else if (index > dataP.length - 1 || index < 0) {
-        console.error(`Usage: ${node} ${file} index`);
+        console.error(`Usage: ${node} ${file} INDEX`);
         process.exit(1);
       }
 
@@ -89,9 +91,9 @@ else if (cmd === "destroy") {}
         }
         console.log(pets[index]);
       });
+     }
+   });
   }
-});
-}
 
   function create () {
     var age = process.argv[3];
@@ -103,7 +105,7 @@ else if (cmd === "destroy") {}
         throw readErr;
       }
 
-      else if (!age && !kind && !name) {
+      else if (!age || !kind || !name) {
         console.error(`Usage: ${node} ${file} ${cmd} AGE KIND NAME`);
         process.exit(1);
       }
@@ -129,4 +131,39 @@ else if (cmd === "destroy") {}
       });
      }
     });
+  }
+
+  function destroy() {
+
+    fs.readFile(petsPath, 'utf8', function(err, data) {
+      var dataP = JSON.parse(data);
+
+      if (err) {
+        throw err;
+      }
+
+      else if (index === undefined) {
+        console.error(`Usage: ${node} ${file} ${cmd} INDEX`);
+        process.exit(1);
+      }
+
+      else if (index > dataP.length - 1 || index < 0) {
+        console.error(`Usage: ${node} ${file} INDEX`);
+        process.exit(1);
+      }
+
+        var pets = dataP;
+
+         pets.splice(index, 1);
+
+         console.log(pets);
+
+         var petsJSON = JSON.stringify(pets);
+
+         fs.writeFile(petsPath, petsJSON, function(writeErr) {
+           if (writeErr) {
+             throw writeErr;
+         }
+       });
+     });
   }

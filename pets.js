@@ -27,7 +27,7 @@ else if (cmd === "destroy") {
 }
 
   else {
-    console.error(`Usage: ${node} ${file} READ | CREATE | UPDATE | DESTROY`);
+    console.error(`Usage: ${node} ${file} [read | create | update | destroy]`);
     process.exit(1);
   }
 
@@ -44,17 +44,16 @@ else if (cmd === "destroy") {
       else if (index === undefined) {
         var pets = dataP;
         console.log(pets);
-        process.exit(1);
       }
 
       else if (index > dataP.length - 1 || index < 0) {
         console.error(`Usage: ${node} ${file} INDEX`);
         process.exit(1);
       }
-
-        console.log(index);
+      else {
         var pet = dataP;
         console.log(pet[index]);
+       }
      });
   }
 
@@ -83,6 +82,7 @@ else if (cmd === "destroy") {
           "kind": kind,
           "name": name
         };
+
         var petsJSON = JSON.stringify(pets);
 
         fs.writeFile(petsPath, petsJSON, function(writeErr) {

@@ -6,9 +6,12 @@ var petsPath = path.join(__dirname, 'pets.json');
 
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 8000;
 
 app.disable('x-powered-by');
+app.set('port', process.env.PORT || 8000);
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
 
 app.get('/pets', function(req, res) {
   fs.readFile(petsPath, 'utf8', function(err, petsJSON) {
@@ -42,12 +45,51 @@ app.get('/pets/:id', function(req, res) {
   });
 });
 
+
+app.post('/pets', function(req, res) {
+    var kind = req.body.kind;
+    var age = req.body.age;
+    var name = req.body.name;
+    var pets;
+
+    var pet = {
+        "age": age,
+        "kind": kind,
+        "name": name
+    };
+
+    fs.readFile(petsPath, 'utf8', function(err, petsJSON) {
+        if (err) {
+            console.error(err.stack);
+            return res.sendStatus(500);
+        }
+
+        if (kind && age && name) {
+            pets = JSON.parse(petsJSON);
+
+            pets.push(pet);
+
+            pets = JSON.stringify(pets);
+
+            fs.writeFile(petsPath, pets, function(writeErr) {
+                if (writeErr) {
+                    throw writeErr;
+                }
+            });
+            res.send(pet);
+        } else {
+            return res.sendStatus(400);
+        }
+    }); //readfile
+});
+
+
 app.use(function(req, res) {
   res.sendStatus(404);
 });
 
-app.listen(port, function() {
-  console.log('Listening on port', port);
+app.listen(app.get('port'), function() {
+  console.log('Listening on port', app.get('port'));
 });
 
 module.exports = app;

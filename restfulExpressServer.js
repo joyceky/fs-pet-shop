@@ -128,6 +128,53 @@ app.put('/pets/:index', function(req, res) {
     }); //readfile
 });
 
+
+app.patch('/pets/:index', function(req, res) {
+    var index = Number.parseInt(req.params.index);
+    var kind = req.body.kind;
+    var age = req.body.age;
+    var name = req.body.name;
+    var pets;
+
+    var pet = {
+        "age": age,
+        "kind": kind,
+        "name": name
+    };
+
+    fs.readFile(petsPath, 'utf8', function(err, petsJSON) {
+        if (err) {
+            console.error(err.stack);
+            return res.sendStatus(500);
+        }
+        pets = JSON.parse(petsJSON);
+
+
+        if (Number.isNaN(index) || index < 0 || index >= pets.length) {
+            return res.sendStatus(404);
+        }
+
+
+        if (kind && age && name) {
+            console.log(pet);
+            pets[index] = pet;
+
+            pets = JSON.stringify(pets);
+
+            fs.writeFile(petsPath, pets, function(writeErr) {
+                if (writeErr) {
+                    throw writeErr;
+                }
+            });
+            res.send(pet);
+        } else {
+            return res.sendStatus(400);
+        }
+    }); //readfile
+});
+
+
+
 app.delete('/pets/:index', function(req, res) {
     var index = Number.parseInt(req.params.index);
     var pets;
